@@ -1,7 +1,7 @@
 HEALTH_API_IMAGE=api
 HEALTH_DB_IMAGE=database
 HEALTH_FRONTEND_IMAGE=frontend
-IMAGE_REG=registry.ng.bluemix.net/ci-pipeline
+IMAGE_REG=registry.ng.bluemix.net/ci-pipeline/
 BUILDER=bx cr build -t
 
 all: api db frontend

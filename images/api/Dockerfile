@@ -1,9 +1,8 @@
-FROM python:alpine3.6
+FROM python:3.6
 
 
-RUN apk --no-cache add --virtual build-deps gcc g++
-RUN apk --no-cache add musl-dev postgresql-dev linux-headers libxml2-dev
-RUN apk --no-cache add nginx supervisor memcached git 
+RUN apt-get update
+RUN apt-get install -y build-essential musl-dev postgresql libxml2-dev nginx supervisor memcached git
 
 RUN pip3 install -U psycopg2
 RUN git clone git://git.openstack.org/openstack/openstack-health
@@ -24,7 +23,7 @@ RUN rm -f /etc/nginx/sites-enabled/*
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY health-api.conf /etc/nginx/sites-available/health-api.conf
 COPY health-uwsgi-api.ini /etc/health-uwsgi-api.ini
-COPY openstack-health-api.conf /etc/openstack-health-api.conf
+COPY openstack-health.conf /etc/openstack-health.conf
 
 RUN ln -s /etc/nginx/sites-available/health-api.conf /etc/nginx/sites-enabled/health-api.conf
 RUN mkdir -p /var/run/uwsgi/
