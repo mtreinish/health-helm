@@ -47,7 +47,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       initContainers:
-      - name: {{ template "health.fullname" . }}-api
+      - name: {{ template "health.fullname" . }}-db-migration
         image: "{{ .Values.image.repository }}/{{.Values.database.image.name }}:{{.Values.database.image.version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/root/run_db_migrations.sh"]
@@ -55,17 +55,17 @@ spec:
           - name: DB_USERNAME
             valueFrom:
               secretKeyRef:
-                name: {{ template "health.fullname" . }}-db-secrets
+                name: {{ template "health.fullname" . }}-dbsecrets
                 key: username
           - name: DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: {{ template "health.fullname" . }}-db-secrets
+                name: {{ template "health.fullname" . }}-dbsecrets
                 key: password
           - name: DB_NAME
             value: subunit2sql
       containers:
-        - name: {{ template "health.fullname" . }}-mqtt-predict
+        - name: {{ template "health.fullname" . }}-api
           image: "{{ .Values.image.repository }}/{{.Values.api.image.name }}:{{.Values.api.image.version }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:

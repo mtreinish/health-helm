@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-    name: {{ template "health.fullname" . }}-db-secrets
+  name: {{ template "health.fullname" . }}-dbsecrets
 type: Opaque
 data:
     username: {{ .Values.database.username | b64enc }}
@@ -57,12 +57,12 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "health.fullname" . }}-db-secrets
+                  name: {{ template "health.fullname" . }}-dbsecrets
                   key: password
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{{{ template "health.fullname" . }}-db-secrets
+                  name: {{ template "health.fullname" . }}-dbsecrets
                   key: username
             - name: PGDATA
               value: "/shared"
