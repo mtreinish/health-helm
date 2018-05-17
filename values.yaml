@@ -1,0 +1,35 @@
+# Default values for health.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+health:
+  storage:
+    size: 50Gi
+    class: "ibmc-file-silver"
+
+
+database:
+  image:
+    name: database
+    version: 1
+  username: subunit2sql
+  password: password
+
+api:
+  image:
+    name: api
+    version: 1
+
+frontend:
+  image:
+    name: frontend
+    version: 1
+
+image:
+  repository: registry.ng.bluemix.net/ci-pipeline
+  tag: stable
+  pullPolicy: IfNotPresent
+
+
