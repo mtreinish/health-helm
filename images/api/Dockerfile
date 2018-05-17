@@ -2,7 +2,7 @@ FROM python:alpine3.6
 
 
 RUN apk --no-cache add --virtual build-deps gcc g++
-RUN apk --no-cache add musl-dev postgresql-dev linux-headers
+RUN apk --no-cache add musl-dev postgresql-dev linux-headers libxml2-dev
 RUN apk --no-cache add nginx supervisor memcached git 
 
 RUN pip3 install -U psycopg2

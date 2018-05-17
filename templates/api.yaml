@@ -25,7 +25,6 @@ roleRef:
   name: {{ template "health.fullname" . }}-services-reader
   apiGroup: rbac.authorization.k8s.io
 ---
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -51,6 +50,7 @@ spec:
       - name: {{ template "health.fullname" . }}-api
         image: "{{ .Values.image.repository }}/{{.Values.database.image.name }}:{{.Values.database.image.version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/root/run_db_migrations.sh"]
         env:
           - name: DB_USERNAME
             valueFrom:
