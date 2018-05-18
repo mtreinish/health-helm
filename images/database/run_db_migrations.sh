@@ -1,5 +1,6 @@
 #!/bin/bash
 set -x
+
 for i in {1..300}; do
     DB_HOST=$(kubectl get svc ${POSTGRES_CONTAINER_NAME} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
     if [[ -z "$MQTT_HOST" ]]; then
@@ -10,4 +11,6 @@ for i in {1..300}; do
         subunit2sql-db-manage --database-connection $DB_URI upgrade head
         exit 0
     fi
+done
+
 exit 1
