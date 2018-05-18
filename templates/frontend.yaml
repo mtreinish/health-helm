@@ -1,30 +1,3 @@
-kind: Role
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  namespace: default
-  name: {{ template "health.fullname" . }}-services-reader
-rules:
-- apiGroups: [""] # "" indicates the core API group
-  resources: ["services"]
-  verbs: ["get"]
-- apiGroups: [""] # "" indicates the core API group
-  resources: ["secrets"]
-  verbs: ["create"]
----
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: {{ template "health.fullname" . }}-read-services
-  namespace: default
-subjects:
-- kind: Group
-  name: system:serviceaccounts
-  apiGroup: rbac.authorization.k8s.io
-roleRef:
-  kind: Role
-  name: {{ template "health.fullname" . }}-services-reader
-  apiGroup: rbac.authorization.k8s.io
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
