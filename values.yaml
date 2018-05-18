@@ -27,6 +27,11 @@ frontend:
     name: frontend
     version: 1
 
+api_wait:
+  image:
+    name: api-wait
+    version: 1
+
 image:
   repository: registry.ng.bluemix.net/ci-pipeline
   tag: stable

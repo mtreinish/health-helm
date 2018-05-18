@@ -1,0 +1,100 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: default
+  name: {{ template "health.fullname" . }}-services-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["services"]
+  verbs: ["get"]
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["secrets"]
+  verbs: ["create"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "health.fullname" . }}-read-services
+  namespace: default
+subjects:
+- kind: Group
+  name: system:serviceaccounts
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: {{ template "health.fullname" . }}-services-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "health.fullname" . }}-frontend
+  labels:
+    app: {{ template "health.name" . }}-frontend
+    chart: {{ template "health.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "health.name" . }}-frontend
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "health.name" . }}-frontend
+        release: {{ .Release.Name }}
+    spec:
+      initContainers:
+      - name: {{ template "health.fullname" . }}-api-wait
+        image: "{{ .Values.image.repository }}/{{.Values.api_wait.image.name }}:{{.Values.api_wait.image.version }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/root/setvalue.sh"]
+        env:
+          - name: API_SECRET_NAME
+            value: {{ template "health.fullname" . }}-apihost
+          - name: API_CONTAINER_NAME
+            value: {{ template "health.fullname" . }}-api
+      containers:
+        - name: {{ template "health.fullname" . }}-api
+          image: "{{ .Values.image.repository }}/{{.Values.frontend.image.name }}:{{.Values.frontend.image.version }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: API_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "health.fullname" . }}-apihost
+                  key: host
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "health.fullname" . }}-frontend
+  labels:
+    app: {{ template "health.name" . }}-frontend
+    chart: {{ template "health.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    name: health
+    protocol: TCP
+  selector:
+    app: {{ template "health.name" . }}-frontend
+    release: {{ .Release.Name }}
