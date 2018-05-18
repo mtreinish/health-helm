@@ -47,7 +47,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       initContainers:
-      - name: {{ template "health.fullname" . }}-db-migration
+      - name: {{ template "health.fullname" . }}-database
         image: "{{ .Values.image.repository }}/{{.Values.database.image.name }}:{{.Values.database.image.version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/root/run_db_migrations.sh"]
@@ -95,8 +95,8 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-  - port: 8123
-    targetPort: 8123
+  - port: 80
+    targetPort: 80
     name: health
     protocol: TCP
   selector:

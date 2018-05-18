@@ -13,14 +13,14 @@ health:
 database:
   image:
     name: database
-    version: 1
+    version: 2
   username: subunit2sql
   password: password
 
 api:
   image:
     name: api
-    version: 1
+    version: 3
 
 frontend:
   image:

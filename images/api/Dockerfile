@@ -6,6 +6,7 @@ RUN apt-get install -y build-essential musl-dev postgresql libxml2-dev nginx sup
 
 RUN pip3 install -U psycopg2
 RUN git clone git://git.openstack.org/openstack/openstack-health
+RUN pip3 install -U uwsgi
 RUN pip3 install -U ./openstack-health
 
 RUN ln -sf /dev/stdout /var/log/nginx/access.log \
