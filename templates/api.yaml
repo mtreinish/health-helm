@@ -52,6 +52,8 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/root/run_db_migrations.sh"]
         env:
+          - name: DB_SECRET_NAME
+            value: {{ template "health.fullname" . }}-dbhost
           - name: POSTGRES_CONTAINER_NAME
             value: {{ template "health.fullname" . }}-postgres
           - name: DB_USERNAME
@@ -70,6 +72,24 @@ spec:
         - name: {{ template "health.fullname" . }}-api
           image: "{{ .Values.image.repository }}/{{.Values.api.image.name }}:{{.Values.api.image.version }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "health.fullname" . }}-dbhost
+                  key: host
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "health.fullname" . }}-dbsecrets
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "health.fullname" . }}-dbsecrets
+                  key: password
+            - name: DB_NAME
+              value: subunit2sql
           ports:
             - name: http
               containerPort: 80
