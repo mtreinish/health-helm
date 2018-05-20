@@ -25,7 +25,7 @@ api:
 frontend:
   image:
     name: frontend
-    version: 1
+    version: 2
 
 api_wait:
   image:
