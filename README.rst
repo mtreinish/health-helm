@@ -14,9 +14,7 @@ skaffold_.
   make
 
 Skaffold also pushes the image to the specified registry and deployes the helm
-chart to either minikube or a remote cluster. In this version the deployment
-uses the configured version of the images and not the one just built by
-skaffold.
+chart to either minikube or a remote cluster. 
 
 .. code:: shell
 

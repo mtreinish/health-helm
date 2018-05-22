@@ -8,7 +8,7 @@ build:
     workspace: images/frontend
   - imageName: database
     workspace: images/database
-  - imageName: api-wait
+  - imageName: apiwait
     workspace: images/api-wait
   tagPolicy:
     envTemplate:
@@ -20,3 +20,8 @@ deploy:
     releases:
       - name: health-development
         chartPath: .
+        values:
+          overrideDatabaseImage: database
+          overrideApiImage: api
+          overrideApiwaitImage: apiwait
+          overrideFrontendImage: frontend
