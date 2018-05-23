@@ -37,4 +37,7 @@ image:
   tag: stable
   pullPolicy: IfNotPresent
 
-
+# databaseImage: <registry>/ci-pipeline/database:tag
+# apiImage: <registry>/ci-pipeline/api:tag
+# frontendImage: <registry>/ci-pipeline/frontend:tag
+# apiwaitImage: <registry>/ci-pipeline/api_wait:tag

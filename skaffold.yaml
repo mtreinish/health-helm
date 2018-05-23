@@ -1,0 +1,27 @@
+apiVersion: skaffold/v1alpha2
+kind: Config
+build:
+  artifacts:
+  - imageName: api
+    workspace: images/api
+  - imageName: frontend
+    workspace: images/frontend
+  - imageName: database
+    workspace: images/database
+  - imageName: apiwait
+    workspace: images/api-wait
+  tagPolicy:
+    envTemplate:
+      template: "{{.IMAGE_REG}}/{{.IMAGE_NAME}}:{{.DIGEST_ALGO}}-{{.DIGEST_HEX}}"
+  local:
+    skipPush: false
+deploy:
+  helm:
+    releases:
+      - name: health-development
+        chartPath: .
+        values:
+          overrideDatabaseImage: database
+          overrideApiImage: api
+          overrideApiwaitImage: apiwait
+          overrideFrontendImage: frontend

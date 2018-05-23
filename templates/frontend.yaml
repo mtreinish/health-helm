@@ -21,7 +21,7 @@ spec:
     spec:
       initContainers:
       - name: {{ template "health.fullname" . }}-api-wait
-        image: "{{ .Values.image.repository }}/{{.Values.api_wait.image.name }}:{{.Values.api_wait.image.version }}"
+        image: {{ template "health.api_wait.image" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/root/setvalue.sh"]
         env:
@@ -31,7 +31,7 @@ spec:
             value: {{ template "health.fullname" . }}-api
       containers:
         - name: {{ template "health.fullname" . }}-api
-          image: "{{ .Values.image.repository }}/{{.Values.frontend.image.name }}:{{.Values.frontend.image.version }}"
+          image: {{ template "health.frontend.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: API_HOST
