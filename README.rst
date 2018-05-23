@@ -33,4 +33,4 @@ when something changes and re-deploy.
   skaffold dev
 
 
-.. _skaffold: https://github.com/audreyr/cookiecutter
+.. _skaffold: https://github.com/GoogleContainerTools/skaffold
