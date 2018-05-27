@@ -18,10 +18,13 @@ build:
 deploy:
   helm:
     releases:
-      - name: health-development
+      - name: "health-dev-{{.PR_NUMBER}}"
         chartPath: .
         values:
           overrideDatabaseImage: database
           overrideApiImage: api
           overrideApiwaitImage: apiwait
           overrideFrontendImage: frontend
+        setValues:
+          ingress.enabled: true
+          ingress.host: ci-dev.us-south.containers.appdomain.cloud

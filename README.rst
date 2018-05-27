@@ -14,12 +14,13 @@ skaffold_.
   make
 
 Skaffold also pushes the image to the specified registry and deployes the helm
-chart to either minikube or a remote cluster. 
+chart to either minikube or a remote cluster.
 
 .. code:: shell
 
   # Build locally and push to registry using skaffold
   export IMAGE_REG=registry.ng.bluemix.net/ci-pipeline
+  export PR_NUMBER=<pull request number>
   skaffold run
 
 Skaffold can be used in development mode, in which case it will monitor the
@@ -32,5 +33,7 @@ when something changes and re-deploy.
   export IMAGE_REG=registry.ng.bluemix.net/ci-pipeline
   skaffold dev
 
+Note: the skaffold configuration uses a skaffold feature which is not merged
+yet: https://github.com/GoogleContainerTools/skaffold/pull/602.
 
 .. _skaffold: https://github.com/audreyr/cookiecutter

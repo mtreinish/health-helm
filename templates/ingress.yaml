@@ -1,0 +1,26 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "health.fullname" . }}
+  annotations:
+    ingress.bluemix.net/rewrite-path: "serviceName={{ template "health.fullname" . }}-api rewrite=/;serviceName={{ template "health.fullname" . }}-frontend rewrite=/"
+  labels:
+    app: {{ template "health.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  rules:
+   - host: "{{ .Values.ingress.host }}"
+     http:
+       paths:
+         - path: /{{ .Release.Name }}-api
+           backend:
+             serviceName: {{ template "health.fullname" . }}-api
+             servicePort: 80
+         - path: /{{ .Release.Name }}-health
+           backend:
+             serviceName: {{ template "health.fullname" . }}-frontend
+             servicePort: 80
+{{- end }}
