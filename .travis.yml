@@ -1,0 +1,22 @@
+services: docker
+language: go
+go:
+  - "1.10.x"
+
+env:
+  - BLUEMIX_DOMAIN=ng.bluemix.net IMAGE_REG=registry.ng.bluemix.net/ci-pipeline CLUSTER_DOMAIN=ci-dev.us-south.containers.appdomain.cloud
+
+before_install:
+  - mkdir -p ~/build/src/github.com/GoogleContainerTools && cd ~/build/src/github.com/GoogleContainerTools
+  - GOPATH=~/build/ && git clone https://github.com/GoogleContainerTools/skaffold && cd skaffold && git fetch origin pull/602/head:602 && git checkout 602 && make && cp out/skaffold ~/build/
+  - curl -sL https://ibm.biz/idt-installer -o idt-installer && bash idt-installer
+
+before_script:
+# Login into IBM cloud services and registry
+  - bx login -a https://api.$BLUEMIX_DOMAIN
+  - bx target -o "Developer Advocacy" -s dev
+  - bx cr login
+
+script:
+  - cd ~/build/$TRAVIS_REPO_SLUG
+  - ./ci/deploy_and_cleanup.sh
