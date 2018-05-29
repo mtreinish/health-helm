@@ -47,6 +47,15 @@ spec:
         release: {{ .Release.Name }}
     spec:
       initContainers:
+      - name: check-db-ready
+        image: postgres:9.6.5
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          - name: POSTGRES_CONTAINER_NAME
+            value: {{ template "health.fullname" . }}-postgres
+        command: ['sh', '-c',
+          'until pg_isready -h $POSTGRES_CONTAINER_NAME -p 5432;
+          do echo waiting for database; sleep 2; done;']
       - name: {{ template "health.fullname" . }}-database
         image: {{ template "health.database.image" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
