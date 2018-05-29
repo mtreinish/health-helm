@@ -41,3 +41,12 @@ image:
 # apiImage: <registry>/ci-pipeline/api:tag
 # frontendImage: <registry>/ci-pipeline/frontend:tag
 # apiwaitImage: <registry>/ci-pipeline/api_wait:tag
+
+## Configure the ingress resource that allows you to access the
+## Health installation. Set up the URL
+## ref: http://kubernetes.io/docs/user-guide/ingress/
+##
+ingress:
+  ## Set to true to enable ingress record generation
+  enabled: false
+  host: health.local
