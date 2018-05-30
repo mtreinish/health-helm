@@ -6,14 +6,10 @@ status="not-queried"
 timedout="yes"
 
 # Define the BRANCH_NAME that we use for the helm release name
-if [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-  BRANCH_NAME=$TRAVIS_BRANCH
-else
-  BRANCH_NAME=$TRAVIS_PULL_REQUEST_BRANCH
-fi
-# PR_NUMBER is used to build the release number
-export RELEASE_NAME=health-dev-$BRANCH_NAME
-export BRANCH_NAME
+RELEASE_ID=${TRAVIS_COMMIT:0:7}
+# RELEASE_ID is used to build the release number
+export RELEASE_NAME=health-dev-$RELEASE_ID
+export RELEASE_ID
 
 # Target the CI cluster
 echo "Release $RELEASE_NAME: build and deploy against the ci-dev cluster."
@@ -58,6 +54,8 @@ if [[ $exit_rc == 0 ]]; then
       echo "Health running with this PR is available at:"
       echo "API: http://${CLUSTER_DOMAIN}/health-dev-${PR_NUMBER}-api"
       echo "Dashboard: http://${CLUSTER_DOMAIN}/health-dev-${PR_NUMBER}-health"
+      echo
+      echo "Remember to delete release when done"
     fi
 fi
 
