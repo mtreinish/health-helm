@@ -13,7 +13,7 @@ health:
 database:
   image:
     name: database
-    version: 2
+    version: 3
   username: subunit2sql
   password: password
 
@@ -30,7 +30,7 @@ frontend:
 api_wait:
   image:
     name: api-wait
-    version: 1
+    version: 2
 
 image:
   repository: registry.ng.bluemix.net/ci-pipeline

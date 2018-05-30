@@ -1,8 +1,8 @@
-FROM python:alpine3.6
+FROM python:stretch
 
-RUN apk update
-RUN apk add --virtual build-deps gcc musl-dev g++ curl
-RUN apk --no-cache add postgresql-dev linux-headers libxml2-dev
+RUN apt-get update
+RUN apt-get install -y build-essential musl-dev curl
+RUN apt-get install -y libpq-dev linux-headers-amd64 libxml2-dev
 
 RUN pip install -U psycopg2
 RUN pip install -U subunit2sql
