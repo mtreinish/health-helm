@@ -18,7 +18,7 @@ build:
 deploy:
   helm:
     releases:
-      - name: "health-dev-{{.PR_NUMBER}}"
+      - name: "health-dev-{{.BRANCH_NAME}}"
         chartPath: .
         values:
           overrideDatabaseImage: database
