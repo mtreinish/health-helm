@@ -1,15 +1,23 @@
 #!/bin/bash
 
+CLUSTER_DOMAIN=ci-dev.us-south.containers.appdomain.cloud
+
 SLEEP_INTERVAL=10
 MAX_ATTEMPTS=10
 status="not-queried"
 timedout="yes"
 
-# Define the BRANCH_NAME that we use for the helm release name
+# Define the RELEASE_ID that we use for the helm release name
 RELEASE_ID=${TRAVIS_COMMIT:0:7}
+# Define a DNS safe EVENT_TYPE for the release name
+if [[ "$TRAVIS_EVENT_TYPE" == "pull_request" ]]; then
+  EVENT_TYPE="pr"
+else
+  EVENT_TYPE=$TRAVIS_EVENT_TYPE
+fi
 # RELEASE_ID is used to build the release number
-export RELEASE_NAME=health-dev-$RELEASE_ID
-export RELEASE_ID
+export RELEASE_NAME=health-dev-$EVENT_TYPE-$RELEASE_ID
+export RELEASE_ID EVENT_TYPE
 
 # Target the CI cluster
 echo "Release $RELEASE_NAME: build and deploy against the ci-dev cluster."
@@ -22,45 +30,39 @@ helm init
 # Wait to helm deployment to be complete
 for ((i=1;i<=MAX_ATTEMPTS;i++)); do
   all_done="yes"
-  for status in $(kubectl get pods --selector=$RELEASE_NAME= -o jsonpath='{.items[*].status.phase}'); do
-    if [[ ! "$status" =~ "Succeeded Failed Unknown" ]]; then
+  for service in api health; do
+    status=$(curl -s -I http://$CLUSTER_DOMAIN/$RELEASE_NAME-$service/ | egrep -c '^HTTP\/1\.1 [23][0-9][0-9] OK.*$')
+    if [[ ! "$status" == 1 ]]; then
       all_done="no"
       break
     fi
   done
-  if [[ "$all_done" == "yes "]]; then
+  if [[ "$all_done" == "yes" ]]; then
     timedout="no"
     break
   fi
   sleep $SLEEP_INTERVAL
 done
 
-exit_rc=0
-for status in $(kubectl get pods --selector=release=development -o jsonpath='{.items[*].status.phase}'); do
-  if [[ "$status" != "Succeeded" ]]; then
-    exit_rc=$(( exit_rc + 1 ))
-    if [[ "$timeout" == "yes" ]]; then
-      echo "Timed out waiting for job to complete. Last status: $status." >&2
-    else
-      echo "Job failed with status: $status" >&2
-    fi
+if [[ "$timeout" == "yes" ]]; then
+  echo "Timed out waiting for job to complete." >&2
+  exit_rc=1
+else
+  echo "Job completed successfully."
+  exit_rc=0
+  if [[ "$TRAVIS_EVENT_TYPE" == "pull_request" ]]; then
+    # The result is avaible for review
+    echo "Health running with this PR is available at:"
+    echo "API: http://${CLUSTER_DOMAIN}/health-dev-${RELEASE_ID}-api"
+    echo "Dashboard: http://${CLUSTER_DOMAIN}/health-dev-${RELEASE_ID}-health"
+    echo
+    echo "Remember to delete release when done: RELEASE_ID=$RELEASE_ID skaffold delete"
   fi
-done
-if [[ $exit_rc == 0 ]]; then
-    echo "Job completed successfully."
-    helm status $RELEASE_NAME
-    if [[ ! "$TRAVIS_PULL_REQUEST" == "false" ]]; then
-      # The result is avaible for review
-      echo "Health running with this PR is available at:"
-      echo "API: http://${CLUSTER_DOMAIN}/health-dev-${PR_NUMBER}-api"
-      echo "Dashboard: http://${CLUSTER_DOMAIN}/health-dev-${PR_NUMBER}-health"
-      echo
-      echo "Remember to delete release when done"
-    fi
 fi
+helm status $RELEASE_NAME
 
 # We only keep the cluster around for pull requests
-if [[ "$TRAVIS_PULL_REQUEST" == "false" || $exit_rc != 0 ]]; then
+if [[ "$TRAVIS_EVENT_TYPE" == "pull_request" || $exit_rc != 0 ]]; then
   ~/build/skaffold delete
 fi
 
