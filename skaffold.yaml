@@ -8,8 +8,6 @@ build:
     workspace: images/frontend
   - imageName: database
     workspace: images/database
-  - imageName: apiwait
-    workspace: images/api-wait
   tagPolicy:
     envTemplate:
       template: "{{.IMAGE_REG}}/{{.IMAGE_NAME}}:{{.DIGEST_ALGO}}-{{.DIGEST_HEX}}"
@@ -23,7 +21,6 @@ deploy:
         values:
           overrideDatabaseImage: database
           overrideApiImage: api
-          overrideApiwaitImage: apiwait
           overrideFrontendImage: frontend
         setValues:
           ingress.enabled: true

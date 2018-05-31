@@ -19,26 +19,13 @@ spec:
         app: {{ template "health.name" . }}-frontend
         release: {{ .Release.Name }}
     spec:
-      initContainers:
-      - name: {{ template "health.fullname" . }}-api-wait
-        image: {{ template "health.api_wait.image" . }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        command: ["/root/setvalue.sh"]
-        env:
-          - name: API_SECRET_NAME
-            value: {{ template "health.fullname" . }}-apihost
-          - name: API_CONTAINER_NAME
-            value: {{ template "health.fullname" . }}-api
       containers:
         - name: {{ template "health.fullname" . }}-api
           image: {{ template "health.frontend.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: API_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "health.fullname" . }}-apihost
-                  key: host
+            - name: API_URL
+              value: {{ template "health.api.fullurl" . }}
           ports:
             - name: http
               containerPort: 80
