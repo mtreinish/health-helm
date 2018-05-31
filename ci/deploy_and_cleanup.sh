@@ -1,9 +1,9 @@
 #!/bin/bash
 
-CLUSTER_DOMAIN=ci-dev.us-south.containers.appdomain.cloud
+CLUSTER_DOMAIN=ci-dev-106092.us-south.containers.appdomain.cloud
 
-SLEEP_INTERVAL=10
-MAX_ATTEMPTS=10
+SLEEP_INTERVAL=20
+MAX_ATTEMPTS=20
 status="not-queried"
 timedout="yes"
 
@@ -13,7 +13,7 @@ RELEASE_ID=${TRAVIS_COMMIT:0:7}
 if [[ "$TRAVIS_EVENT_TYPE" == "pull_request" ]]; then
   EVENT_TYPE="pr"
 else
-  EVENT_TYPE=$TRAVIS_EVENT_TYPE
+  EVENT_TYPE="${TRAVIS_EVENT_TYPE:-api}"
 fi
 # RELEASE_ID is used to build the release number
 export RELEASE_NAME=health-dev-$EVENT_TYPE-$RELEASE_ID
@@ -31,8 +31,10 @@ helm init
 for ((i=1;i<=MAX_ATTEMPTS;i++)); do
   all_done="yes"
   for service in api health; do
-    status=$(curl -s -I http://$CLUSTER_DOMAIN/$RELEASE_NAME-$service/ | egrep -c '^HTTP\/1\.1 [23][0-9][0-9] OK.*$')
-    if [[ ! "$status" == 1 ]]; then
+    status_header="$(curl -s -I http://$CLUSTER_DOMAIN/$RELEASE_NAME-$service/ | egrep '^HTTP\/1\.1.*$')"
+    status="$(echo $status_header| egrep -c '^HTTP\/1\.1 [23][0-9][0-9] OK.*$')"
+    echo "HTTP Status for ${service}: ${status_header%?} [code: ${status}]"
+    if [[ ! "$status" == "1" ]]; then
       all_done="no"
       break
     fi
@@ -44,7 +46,7 @@ for ((i=1;i<=MAX_ATTEMPTS;i++)); do
   sleep $SLEEP_INTERVAL
 done
 
-if [[ "$timeout" == "yes" ]]; then
+if [[ "$timedout" == "yes" ]]; then
   echo "Timed out waiting for job to complete." >&2
   exit_rc=1
 else
@@ -53,16 +55,16 @@ else
   if [[ "$TRAVIS_EVENT_TYPE" == "pull_request" ]]; then
     # The result is avaible for review
     echo "Health running with this PR is available at:"
-    echo "API: http://${CLUSTER_DOMAIN}/health-dev-${RELEASE_ID}-api"
-    echo "Dashboard: http://${CLUSTER_DOMAIN}/health-dev-${RELEASE_ID}-health"
+    echo "API: http://${CLUSTER_DOMAIN}/${RELEASE_NAME}-api"
+    echo "Dashboard: http://${CLUSTER_DOMAIN}/${RELEASE_NAME}-health"
     echo
-    echo "Remember to delete release when done: RELEASE_ID=$RELEASE_ID skaffold delete"
+    echo "Remember to delete release when done: EVENT_TYPE=$EVENT_TYPE RELEASE_ID=$RELEASE_ID skaffold delete"
   fi
 fi
 helm status $RELEASE_NAME
 
 # We only keep the cluster around for pull requests
-if [[ "$TRAVIS_EVENT_TYPE" == "pull_request" || $exit_rc != 0 ]]; then
+if [[ ! "$TRAVIS_EVENT_TYPE" == "pull_request" || $exit_rc != 0 ]]; then
   ~/build/skaffold delete
 fi
 

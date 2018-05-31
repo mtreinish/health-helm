@@ -24,4 +24,4 @@ deploy:
           overrideFrontendImage: frontend
         setValues:
           ingress.enabled: true
-          ingress.host: ci-dev.us-south.containers.appdomain.cloud
+          ingress.host: ci-dev-106092.us-south.containers.appdomain.cloud
