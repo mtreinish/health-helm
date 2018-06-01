@@ -58,10 +58,11 @@ Image name that support for the single value format as well as the hash.
 {{- end -}}
 {{- end -}}
 
-{{- define "health.api_wait.image" -}}
-{{- if .Values.overrideApiwaitImage -}}
-{{- .Values.overrideApiwaitImage -}}
-{{- else -}}
-{{- printf "%s/%s:%s" .Values.image.repository .Values.api_wait.image.name .Values.api_wait.image.version -}}
+{{/*
+API full URL for client access. We don't really handle the no-ingress case.
+*/}}
+{{- define "health.api.fullurl" -}}
+{{- if .Values.ingress.enabled -}}
+{{- printf "http://%s/%s-api" .Values.ingress.host .Release.Name -}}
 {{- end -}}
 {{- end -}}

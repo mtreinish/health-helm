@@ -8,8 +8,6 @@ build:
     workspace: images/frontend
   - imageName: database
     workspace: images/database
-  - imageName: apiwait
-    workspace: images/api-wait
   tagPolicy:
     envTemplate:
       template: "{{.IMAGE_REG}}/{{.IMAGE_NAME}}:{{.DIGEST_ALGO}}-{{.DIGEST_HEX}}"
@@ -18,13 +16,12 @@ build:
 deploy:
   helm:
     releases:
-      - name: "health-dev-{{.PR_NUMBER}}"
+      - name: "health-dev-{{.EVENT_TYPE}}-{{.RELEASE_ID}}"
         chartPath: .
         values:
           overrideDatabaseImage: database
           overrideApiImage: api
-          overrideApiwaitImage: apiwait
           overrideFrontendImage: frontend
         setValues:
           ingress.enabled: true
-          ingress.host: ci-dev.us-south.containers.appdomain.cloud
+          ingress.host: ci-dev-106092.us-south.containers.appdomain.cloud

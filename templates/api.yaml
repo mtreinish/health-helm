@@ -47,14 +47,21 @@ spec:
         release: {{ .Release.Name }}
     spec:
       initContainers:
+      - name: check-db-ready
+        image: postgres:9.6.5
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          - name: POSTGRES_CONTAINER_NAME
+            value: {{ template "health.fullname" . }}-postgres
+        command: ['sh', '-c',
+          'until pg_isready -h $POSTGRES_CONTAINER_NAME -p 5432;
+          do echo waiting for database; sleep 2; done;']
       - name: {{ template "health.fullname" . }}-database
         image: {{ template "health.database.image" . }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/root/run_db_migrations.sh"]
         env:
-          - name: DB_SECRET_NAME
-            value: {{ template "health.fullname" . }}-dbhost
-          - name: POSTGRES_CONTAINER_NAME
+          - name: DB_HOST
             value: {{ template "health.fullname" . }}-postgres
           - name: DB_USERNAME
             valueFrom:
@@ -74,10 +81,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: DB_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "health.fullname" . }}-dbhost
-                  key: host
+              value: {{ template "health.fullname" . }}-postgres
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:

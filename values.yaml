@@ -27,11 +27,6 @@ frontend:
     name: frontend
     version: "2"
 
-api_wait:
-  image:
-    name: api-wait
-    version: "2"
-
 image:
   repository: registry.ng.bluemix.net/ci-pipeline
   tag: stable
@@ -40,7 +35,6 @@ image:
 # databaseImage: <registry>/ci-pipeline/database:tag
 # apiImage: <registry>/ci-pipeline/api:tag
 # frontendImage: <registry>/ci-pipeline/frontend:tag
-# apiwaitImage: <registry>/ci-pipeline/api_wait:tag
 
 ## Configure the ingress resource that allows you to access the
 ## Health installation. Set up the URL

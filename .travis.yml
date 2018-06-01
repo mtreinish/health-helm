@@ -1,11 +1,14 @@
 services: docker
-language: python
+language: go
+go:
+  - "1.10.x"
 
 env:
   - BLUEMIX_DOMAIN=ng.bluemix.net IMAGE_REG=registry.ng.bluemix.net/ci-pipeline CLUSTER_DOMAIN=ci-dev.us-south.containers.appdomain.cloud
 
 before_install:
-  - curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && chmod +x skaffold && mv skaffold ~/build/
+  - mkdir -p ~/build/src/github.com/GoogleContainerTools && cd ~/build/src/github.com/GoogleContainerTools
+  - GOPATH=~/build/ && git clone https://github.com/GoogleContainerTools/skaffold && cd skaffold && make && cp out/skaffold ~/build/
   - curl -sL https://ibm.biz/idt-installer -o idt-installer && bash idt-installer
 
 before_script:
