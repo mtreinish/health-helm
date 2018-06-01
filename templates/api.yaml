@@ -61,9 +61,7 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/root/run_db_migrations.sh"]
         env:
-          - name: DB_SECRET_NAME
-            value: {{ template "health.fullname" . }}-dbhost
-          - name: POSTGRES_CONTAINER_NAME
+          - name: DB_HOST
             value: {{ template "health.fullname" . }}-postgres
           - name: DB_USERNAME
             valueFrom:
@@ -83,10 +81,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: DB_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: {{ template "health.fullname" . }}-dbhost
-                  key: host
+              value: {{ template "health.fullname" . }}-postgres
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
