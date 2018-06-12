@@ -183,6 +183,11 @@ pass that subunit output directly into subunit2sql. For example::
 
 .. _pytest: https://docs.pytest.org/en/latest/
 
+Additionally you can use the Rust `junitxml2subunit`_ project for a faster
+tool performing the same conversion.
+
+.. _junitxml2subunit: https://crates.io/crates/junitxml2subunit
+
 
 Writing your own conversion
 '''''''''''''''''''''''''''
@@ -196,7 +201,9 @@ bindings available for multiple languages including `Javascript`_, `Python`_,
 converted to v2 using the subunit-1to2 utility) bindings available for even
 more languages including `C`_, `C++`_, `shell`_, and `Perl`_. If you're using
 python you can refer to the [junitxml2subunit.py](junitxml2subunit.py) file
-in this repo for an example.
+in this repo for an example. Another example performing the same conversion
+(JUnit XML to subunit v2) can be found in rust with the
+`junitxml2subunit project`_, if you'd like to implement a converter in rust.
 
 .. _Javascript: https://github.com/testing-cabal/subunit-js/
 .. _Python: https://pypi.org/project/python-subunit/
@@ -206,6 +213,7 @@ in this repo for an example.
 .. _C++: https://github.com/testing-cabal/subunit/tree/master/c%2B%2B
 .. _shell: https://github.com/testing-cabal/subunit/tree/master/shell
 .. _Perl: https://github.com/testing-cabal/subunit/tree/master/perl
+.. _junitxml2subunit project: https://github.com/mtreinish/junitxml2subunit
 
 Manually Generating Subunit
 ---------------------------
