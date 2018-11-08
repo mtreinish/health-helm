@@ -108,6 +108,14 @@ stream for the run. For example::
 .. _subunit.run: https://github.com/testing-cabal/subunit#python
 .. _unnitest: https://docs.python.org/2.7/library/unittest.html
 
+Alternatively there is a `pytest`_ plugin `pytest-subunit`_ that will enable
+the pytest runner to emit subunit natively. However, this package hasn't been
+updated in a long time and looking at the junitxml section below might be
+a better path for using pytest with subunit.
+
+.. _pytest: https://docs.pytest.org/en/latest/
+.. _pytest-subunit: https://github.com/lukaszo/pytest-subunit
+
 Javascript
 ''''''''''
 If you're using `karma`_ as your test runner for JS tests you can use the
